@@ -1,0 +1,11 @@
+<div class="form-container">
+  <h2>Confirmación</h2>
+  <p>Revisa tus datos antes de confirmar:</p>
+  <ul>
+    <li><strong>Nombre:</strong> {{ donorName }}</li>
+    <li><strong>Email:</strong> {{ donorEmail }}</li>
+    <li><strong>Tipo de Donación:</strong> {{ donationType }}</li>
+    <li><strong>Cantidad:</strong> {{ donationAmount }}</li>
+  </ul>
+  <button class="btn btn-success" (click)="confirm()">Confirmar</button>
+</div>

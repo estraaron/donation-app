@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <h1>Formulario de Donaciones</h1>
+  <div class="stepper-container">
+    <!-- Stepper Navigation -->
+    <ul class="stepper">
+      <li [class.active]="currentStep === 1" (click)="goToStep(1)">Crear Donador</li>
+      <li [class.active]="currentStep === 2" (click)="goToStep(2)">Detalles de Donación</li>
+      <li [class.active]="currentStep === 3" (click)="goToStep(3)">Confirmación</li>
+    </ul>
+
+    <!-- Stepper Content -->
+    <div class="step-content">
+      <ng-container *ngIf="currentStep === 1">
+        <app-create-donor (donorSaved)="saveDonorData($event)"></app-create-donor>
+      </ng-container>
+      <ng-container *ngIf="currentStep === 2">
+        <app-donation-details (donationSaved)="nextStep()"></app-donation-details>
+      </ng-container>
+      <ng-container *ngIf="currentStep === 3">
+        <app-confirmation></app-confirmation>
+      </ng-container>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="step-navigation mt-3">
+      <button
+        class="btn btn-secondary"
+        [disabled]="currentStep === 1"
+        (click)="previousStep()"
+      >
+        Anterior
+      </button>
+      <button
+        class="btn btn-primary"
+        [disabled]="currentStep === steps.length - 1"
+        (click)="nextStep()"
+      >
+        Siguiente
+      </button>
+    </div>
+  </div>
+</div>
