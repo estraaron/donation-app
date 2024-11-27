@@ -7,7 +7,7 @@ export const createCustomer = createAction(
 
 export const createCustomerSuccess = createAction(
   '[Donor] Create Customer Success',
-  props<{ customerId: string }>()
+  props<{ customerId: string, name: string, email: string }>()
 );
 
 export const createCustomerFailure = createAction(
@@ -37,7 +37,7 @@ export const updateCustomer = createAction(
 
 export const updateCustomerSuccess = createAction(
   '[Donor] Update Customer Success',
-  props<{ customerId: string }>()
+  props<{ customerId: string; name: string; email: string  }>()
 );
 
 export const updateCustomerFailure = createAction(

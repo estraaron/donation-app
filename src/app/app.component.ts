@@ -1,134 +1,76 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { createCustomer, retrieveCustomer } from './state/donor/donor.actions';
+import { selectDonorDetails } from './state/donor/donor.selectors';
 import { CommonModule } from '@angular/common';
-import { CreateDonorComponent } from './components/create-donor/create-donor.component';
-import { DonationDetailsComponent } from './components/donation-details/donation-details.component';
-import { ConfirmationComponent } from './components/confirmation/confirmation.component';
-import { retrieveCustomer } from './state/donor/donor.actions';
+import { CreateDonorComponent } from "./components/create-donor/create-donor.component";
+import { DonationDetailsComponent } from "./components/donation-details/donation-details.component";
+import { ConfirmationComponent } from "./components/confirmation/confirmation.component";
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent]
 })
 export class AppComponent implements OnInit {
-  currentStep = 1; // Paso inicial
+  currentStep = 1;
   donorId: string | null = null;
-  amount: number | null = null;
-  type: string | null = null;
-  steps = ['Crear Donador', 'Detalles de Donación', 'Confirmación'];
-
-  private navigatingManually = false; // Bandera para navegación manual
+  donorDetails$: Observable<{ name: string; email: string }>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store,
-    private cdr: ChangeDetectorRef // Inyecta ChangeDetectorRef
-  ) {}
+    private store: Store
+  ) {
+    this.donorDetails$ = this.store.select(selectDonorDetails);
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      if (this.navigatingManually) {
-        console.log('Ignorando actualización de queryParams debido a navegación manual.');
-        return;
-      }
-
-      const step = +params['step'] || 1;
-      const donorId = params['donorId'] || null;
-
-      // Validación para evitar sobrescribir pasos erróneos
-      if (step !== this.currentStep) {
-        console.log(`Cambiando paso: ${this.currentStep} -> ${step}`);
-        this.currentStep = step;
-      }
-
-      this.donorId = donorId;
-      this.amount = params['amount'] ? +params['amount'] : null;
-      this.type = params['type'] || null;
+      this.currentStep = +params['step'] || 1;
+      this.donorId = params['donorId'] || null;
 
       if (this.donorId) {
+        // Recuperar datos del donador desde la API si tenemos un ID
         this.store.dispatch(retrieveCustomer({ customerId: this.donorId }));
       }
-
-      this.cdr.detectChanges(); // Forzar detección de cambios después de modificar los parámetros
     });
   }
 
-  goToStep(index: number) {
-    if (index >= 1 && index <= this.steps.length) {
-      this.updateStep(index);
-    }
-  }
-
-  nextStep() {
-    if (this.currentStep < this.steps.length) {
-      this.updateStep(this.currentStep + 1);
-    }
-  }
-
-  previousStep() {
-    if (this.currentStep > 1) {
-      this.updateStep(this.currentStep - 1);
-    }
-  }
-
-  private updateStep(step: number) {
-    if (step === this.currentStep) {
-      console.log('El paso ya está en el estado actual:', step);
-      return;
-    }
-
-    console.log(`Actualizando paso: ${this.currentStep} -> ${step}`);
+  goToStep(step: number) {
     this.currentStep = step;
-
-    // Forzar la actualización de la ruta después de cambiar el paso
-    this.updateRoute(() => {
-      console.log('Ruta actualizada correctamente para el paso:', step);
-    });
+    this.updateQueryParams();
   }
 
-  private updateRoute(onComplete?: () => void) {
-    const queryParams = {
-      step: this.currentStep,
-      donorId: this.donorId,
-      amount: this.amount,
-      type: this.type,
-    };
+  handleCreateCustomer(data: { name: string; email: string }): void {
+    this.store.dispatch(createCustomer(data));
+  }
 
+  handleCustomerSaved(): void {
     if (!this.donorId) {
-      console.error('El Donor ID es obligatorio para actualizar la ruta.');
-      return;
-    }
-
-    console.log('Actualizando ruta con parámetros:', queryParams);
-    this.navigatingManually = true;
-
-    this.router
-      .navigate([], {
-        relativeTo: this.route,
-        queryParams,
-        queryParamsHandling: 'merge',
-      })
-      .finally(() => {
-        this.navigatingManually = false;
-        if (onComplete) {
-          onComplete();
+      // Obtener el ID del estado cuando se crea un nuevo donador
+      this.store.select(selectDonorDetails).subscribe((details) => {
+        if (details && details.customerId) {
+          this.donorId = details.customerId;
+          this.updateQueryParams(); // Actualiza la URL con el nuevo donorId
         }
       });
+    }
+    this.goToStep(2); // Avanzar al siguiente paso
   }
 
-  saveDonorData(donorId: string) {
-    this.donorId = donorId;
-    this.updateStep(2);
-  }
-
-  saveDonationDetails(amount: number, type: string) {
-    this.amount = amount;
-    this.type = type;
-    this.updateStep(3);
+  private updateQueryParams(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        step: this.currentStep,
+        donorId: this.donorId || null, // Asegurarse de no pasar `undefined`
+      },
+      queryParamsHandling: 'merge', // Mantener otros parámetros existentes
+    });
   }
 }

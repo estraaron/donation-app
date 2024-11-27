@@ -1,42 +1,60 @@
-<div class="container mt-5">
-  <h1>Formulario de Donaciones</h1>
-  <div class="stepper-container">
-    <!-- Stepper Navigation -->
-    <ul class="stepper">
-      <li [class.active]="currentStep === 1" (click)="goToStep(1)">Crear Donador</li>
-      <li [class.active]="currentStep === 2" (click)="goToStep(2)">Detalles de Donación</li>
-      <li [class.active]="currentStep === 3" (click)="goToStep(3)">Confirmación</li>
-    </ul>
+<div class="container">
+  <h2>Paso {{ currentStep }}</h2>
 
-    <!-- Stepper Content -->
-    <div class="step-content">
-      <ng-container *ngIf="currentStep === 1">
-        <app-create-donor (donorSaved)="saveDonorData($event)"></app-create-donor>
-      </ng-container>
-      <ng-container *ngIf="currentStep === 2">
-        <app-donation-details (donationSaved)="nextStep()"></app-donation-details>
-      </ng-container>
-      <ng-container *ngIf="currentStep === 3">
-        <app-confirmation></app-confirmation>
-      </ng-container>
+  <div class="stepper-wrapper">
+    <div class="stepper-container">
+      <div
+        class="step"
+        [ngClass]="{ 'active': currentStep === 1, 'completed': currentStep > 1 }"
+      >
+        1
+      </div>
+      <div class="stepper-line" *ngIf="currentStep > 1"></div>
+      <div
+        class="step"
+        [ngClass]="{ 'active': currentStep === 2, 'completed': currentStep > 2 }"
+      >
+        2
+      </div>
+      <div class="stepper-line" *ngIf="currentStep > 2"></div>
+      <div class="step" [ngClass]="{ 'active': currentStep === 3 }">3</div>
     </div>
+  </div>
 
-    <!-- Navigation Buttons -->
-    <div class="step-navigation mt-3">
-      <button
-        class="btn btn-secondary"
-        [disabled]="currentStep === 1"
-        (click)="previousStep()"
-      >
-        Anterior
-      </button>
-      <button
-        class="btn btn-primary"
-        [disabled]="currentStep === steps.length - 1"
-        (click)="nextStep()"
-      >
-        Siguiente
-      </button>
-    </div>
+  <div [ngSwitch]="currentStep">
+    <ng-container *ngSwitchCase="1">
+      <app-create-donor
+  *ngIf="currentStep === 1"
+  [customerId]="donorId"
+  [name]="(donorDetails$ | async)?.name ?? ''"
+  [email]="(donorDetails$ | async)?.email ?? ''"
+  (customerSaved)="handleCustomerSaved()"
+></app-create-donor>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="2">
+      <app-donation-details></app-donation-details>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="3">
+      <app-confirmation></app-confirmation>
+    </ng-container>
+  </div>
+
+  <div class="navigation">
+    <button
+      class="btn btn-primary"
+      (click)="goToStep(currentStep - 1)"
+      [disabled]="currentStep === 1"
+    >
+      Anterior
+    </button>
+    <button
+      class="btn btn-primary"
+      (click)="goToStep(currentStep + 1)"
+      [disabled]="currentStep === 3"
+    >
+      Siguiente
+    </button>
   </div>
 </div>

@@ -21,9 +21,11 @@ export const donorReducer = createReducer(
     email,
     customerId: state.customerId
   })),
-  on(createCustomerSuccess, (state, { customerId }) => ({
+  on(createCustomerSuccess, (state, { customerId, name, email }) => ({
     ...state,
     customerId,
+    name,
+    email,
   })),
   on(retrieveCustomerSuccess, (state, { customerId, name, email }) => ({
     ...state,
@@ -31,8 +33,10 @@ export const donorReducer = createReducer(
     name,
     email,
   })),
-  on(updateCustomerSuccess, (state, { customerId }) => ({
+  on(updateCustomerSuccess, (state, { customerId, name, email }) => ({
     ...state,
     customerId,
+    name,
+    email,
   }))
 );

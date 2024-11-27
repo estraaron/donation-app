@@ -8,25 +8,38 @@ import { DonorService } from './donor.service';
 @Injectable()
 export class DonorEffects {
 
-  // Efecto para crear un nuevo cliente con defer y exhaustMap
   createCustomer$ = createEffect(() =>
-    defer(() => this.actions$.pipe(
-      ofType(createCustomer),
-      tap(action => console.log('Action received:', action)),  // Log de la acción
-      exhaustMap((action) =>
-        this.donorService.createCustomer(action).pipe(
-          map(customer => createCustomerSuccess({ customerId: customer.id })),
-          catchError(error => of(createCustomerFailure({ error })))
+    defer(() =>
+      this.actions$.pipe(
+        ofType(createCustomer),
+        // Inspecciona los datos de la acción antes de enviarlos al servicio
+        tap(action => console.log('Action received:', action)),
+        exhaustMap(action =>
+          this.donorService.createCustomer({ name: action.name, email: action.email }).pipe(
+            // Inspecciona lo que se envía al servicio
+            tap(requestBody => console.log('Request to Stripe:', { name: action.name, email: action.email })),
+            // Inspecciona la respuesta devuelta por Stripe
+            tap(response => console.log('Response from Stripe:', response)),
+            map(customer => createCustomerSuccess({
+              customerId: customer.id,
+              name: customer.name,
+              email: customer.email
+            })),
+            catchError(error => {
+              // Inspecciona cualquier error devuelto por Stripe
+              console.error('Error from Stripe:', error);
+              return of(createCustomerFailure({ error }));
+            })
+          )
         )
       )
-    ))
+    )
   );
 
   // Efecto para recuperar un cliente existente con defer y exhaustMap
   retrieveCustomer$ = createEffect(() =>
     defer(() => this.actions$.pipe(
       ofType(retrieveCustomer),
-      tap(action => console.log('Retrieving customer:', action)),  // Log de la acción
       exhaustMap((action) =>
         this.donorService.retrieveCustomer(action.customerId).pipe(
           map(customer => retrieveCustomerSuccess({ customerId: customer.id, name: customer.name, email: customer.email })),
@@ -40,10 +53,15 @@ export class DonorEffects {
   updateCustomer$ = createEffect(() =>
     defer(() => this.actions$.pipe(
       ofType(updateCustomer),
-      tap(action => console.log('Updating customer:', action)),  // Log de la acción
+      // tap(action => console.log('Updating customer:', action)),  // Log de la acción
       exhaustMap((action) =>
         this.donorService.updateCustomer(action.customerId, { name: action.name, email: action.email }).pipe(
-          map(() => updateCustomerSuccess({ customerId: action.customerId })),
+          map((updatedCustomer) =>
+            updateCustomerSuccess({
+              customerId: updatedCustomer.id,
+              name: updatedCustomer.name,
+              email: updatedCustomer.email
+            })),
           catchError(error => of(updateCustomerFailure({ error })))
         )
       )
@@ -54,6 +72,6 @@ export class DonorEffects {
     private actions$: Actions,
     private donorService: DonorService
   ) {
-    console.log('Actions observable:', this.actions$);  // Log en el constructor
+    // console.log('Actions observable:', this.actions$);  // Log en el constructor
   }
 }

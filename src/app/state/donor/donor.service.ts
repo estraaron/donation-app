@@ -1,6 +1,5 @@
-// src/app/state/donor/donor.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,14 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class DonorService {
   private stripeBaseUrl = 'https://api.stripe.com/v1'; // URL base de Stripe
-  private stripeApiKey = ''; // Reemplaza con tu clave de Stripe
+  private stripeApiKey = 'sk_test_51OcYzaCpxR0GNX12BWo7Pt0YmnMwDTFAUhoiWH5VHyrh07pjurhdaauGpqMLJJYItaH6ouRe8tWry00VmRJHYceI00XyYIs3tV'; // Reemplaza con tu clave de Stripe
 
   constructor(private http: HttpClient) {}
 
   createCustomer(data: { name: string; email: string }): Observable<any> {
+    // Convertir los datos a x-www-form-urlencoded
+    const body = this.toUrlEncoded(data);
     return this.http.post(
       `${this.stripeBaseUrl}/customers`,
-      data,
+      body,
       this.getHeaders()
     );
   }
@@ -31,19 +32,26 @@ export class DonorService {
     customerId: string,
     data: { name?: string; email?: string }
   ): Observable<any> {
+    const body = this.toUrlEncoded(data);
     return this.http.post(
       `${this.stripeBaseUrl}/customers/${customerId}`,
-      data,
+      body,
       this.getHeaders()
     );
   }
 
   private getHeaders() {
     return {
-      headers: {
+      headers: new HttpHeaders({
         Authorization: `Bearer ${this.stripeApiKey}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      }),
     };
+  }
+
+  private toUrlEncoded(obj: any): string {
+    return Object.keys(obj)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
+      .join('&');
   }
 }

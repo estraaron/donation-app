@@ -7,3 +7,12 @@ export const selectCustomerId = createSelector(
   selectDonorFeature,
   (state) => state.customerId
 );
+
+export const selectDonorDetails = createSelector(
+  selectDonorFeature,
+  (state) => ({
+    customerId: state.customerId,
+    name: state.name,
+    email: state.email,
+  })
+);
