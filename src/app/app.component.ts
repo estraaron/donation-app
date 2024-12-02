@@ -8,6 +8,8 @@ import { CreateDonorComponent } from "./components/create-donor/create-donor.com
 import { DonationDetailsComponent } from "./components/donation-details/donation-details.component";
 import { ConfirmationComponent } from "./components/confirmation/confirmation.component";
 import { Observable } from 'rxjs';
+import { selectDonationState, selectPrice, selectPriceDetails } from './state/donation/donation.selectors';
+import { getPrice } from './state/donation/donation.actions';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +21,15 @@ import { Observable } from 'rxjs';
 export class AppComponent implements OnInit {
   currentStep = 1;
   donorId: string | null = null;
+  donationId: string | null = null;
   donorDetails$: Observable<{ name: string; email: string }>;
+
+  donationDetails$: Observable<Partial<{
+    type: string;
+    amount: number;
+    currency: string;
+    interval: string;
+  }>>;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,16 +37,22 @@ export class AppComponent implements OnInit {
     private store: Store
   ) {
     this.donorDetails$ = this.store.select(selectDonorDetails);
+    this.donationDetails$ = this.store.select(selectPriceDetails);
   }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.currentStep = +params['step'] || 1;
       this.donorId = params['donorId'] || null;
+      this.donationId = params['donationId'] || null;
 
       if (this.donorId) {
         // Recuperar datos del donador desde la API si tenemos un ID
         this.store.dispatch(retrieveCustomer({ customerId: this.donorId }));
+      }
+
+      if (this.donationId) {
+        this.store.dispatch(getPrice({priceId: this.donationId}))
       }
     });
   }
@@ -44,10 +60,6 @@ export class AppComponent implements OnInit {
   goToStep(step: number) {
     this.currentStep = step;
     this.updateQueryParams();
-  }
-
-  handleCreateCustomer(data: { name: string; email: string }): void {
-    this.store.dispatch(createCustomer(data));
   }
 
   handleCustomerSaved(): void {
@@ -63,12 +75,27 @@ export class AppComponent implements OnInit {
     this.goToStep(2); // Avanzar al siguiente paso
   }
 
+  handledonationSaved() {
+    if (!this.donationId) {
+      // Obtener el ID del estado cuando se crea un nuevo donador
+      this.store.select(selectPrice).subscribe((price) => {
+        if (price) {
+          console.log(price, 'price data');
+          this.donationId = price.id;
+          this.updateQueryParams(); // Actualiza la URL con el nuevo donorId
+        }
+      });
+    }
+    this.goToStep(3); // Avanzar al siguiente paso
+  }
+
   private updateQueryParams(): void {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
         step: this.currentStep,
         donorId: this.donorId || null, // Asegurarse de no pasar `undefined`
+        donationId: this.donationId || null,
       },
       queryParamsHandling: 'merge', // Mantener otros parámetros existentes
     });

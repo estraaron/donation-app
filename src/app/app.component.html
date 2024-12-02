@@ -24,16 +24,20 @@
   <div [ngSwitch]="currentStep">
     <ng-container *ngSwitchCase="1">
       <app-create-donor
-  *ngIf="currentStep === 1"
-  [customerId]="donorId"
-  [name]="(donorDetails$ | async)?.name ?? ''"
-  [email]="(donorDetails$ | async)?.email ?? ''"
-  (customerSaved)="handleCustomerSaved()"
+        *ngIf="currentStep === 1"
+        [customerId]="donorId"
+        [name]="(donorDetails$ | async)?.name ?? ''"
+        [email]="(donorDetails$ | async)?.email ?? ''"
+        (customerSaved)="handleCustomerSaved()"
 ></app-create-donor>
     </ng-container>
 
     <ng-container *ngSwitchCase="2">
-      <app-donation-details></app-donation-details>
+      <app-donation-details
+      [donationId]="donationId"
+      [initialValues]="(donationDetails$ | async) ?? {}"
+      (donationSaved)="handledonationSaved()"
+      ></app-donation-details>
     </ng-container>
 
     <ng-container *ngSwitchCase="3">

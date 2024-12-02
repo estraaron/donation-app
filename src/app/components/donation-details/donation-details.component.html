@@ -1,24 +1,138 @@
 <div class="form-container">
   <h2>Detalles de la Donación</h2>
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="donationForm" (ngSubmit)="onSubmit()">
+    <!-- Tipo de Donación -->
     <div class="mb-3">
-      <label for="type" class="form-label">Tipo de Donación</label>
-      <select id="type" class="form-select" [(ngModel)]="type" name="type" required>
-        <option value="one-time">Única</option>
-        <option value="recurring">Recurrente</option>
-      </select>
+      <label class="form-label">Tipo de Donación</label>
+      <div class="radio-group" role="group" aria-label="Tipo de Donación">
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('type')?.value === 'one_time'"
+          (click)="setType('one_time')"
+        >
+          Única
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('type')?.value === 'recurring'"
+          (click)="setType('recurring')"
+        >
+          Recurrente
+        </div>
+      </div>
     </div>
+
+    <!-- Cantidad -->
     <div class="mb-3">
-      <label for="amount" class="form-label">Cantidad</label>
-      <input
-        id="amount"
-        type="number"
-        class="form-control"
-        [(ngModel)]="amount"
-        name="amount"
-        required
-      />
+      <label for="amount-slider" class="form-label">Cantidad</label>
+      <div class="slider-container">
+        <input
+          id="amount-slider"
+          type="range"
+          class="form-range"
+          formControlName="amount"
+          min="1"
+          max="1000"
+          step="1"
+          (input)="updateSlider($event)"
+        />
+        <div
+          class="thumb-label"
+          [style.left.%]="calculateThumbPosition()"
+        >
+          <input
+            type="number"
+            [value]="donationForm.get('amount')?.value"
+            (input)="updateSlider($event, true)"
+          />
+        </div>
+      </div>
+      <div
+        *ngIf="
+          donationForm.get('amount')?.invalid &&
+          donationForm.get('amount')?.touched
+        "
+        class="text-danger"
+      >
+        Por favor ingrese una cantidad válida mayor a 0.
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar</button>
+
+    <!-- Moneda -->
+    <div class="mb-3">
+      <label class="form-label">Moneda</label>
+      <div class="radio-group" role="group" aria-label="Moneda">
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('currency')?.value === 'usd'"
+          (click)="setCurrency('usd')"
+        >
+          USD
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('currency')?.value === 'eur'"
+          (click)="setCurrency('eur')"
+        >
+          EUR
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('currency')?.value === 'gbp'"
+          (click)="setCurrency('gbp')"
+        >
+          GBP
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('currency')?.value === 'mxn'"
+          (click)="setCurrency('mxn')"
+        >
+          MXN
+        </div>
+      </div>
+    </div>
+
+    <!-- Intervalo (Solo recurrentes) -->
+    <div class="mb-3" *ngIf="donationForm.contains('interval')">
+      <label class="form-label">Intervalo</label>
+      <div class="radio-group" role="group" aria-label="Intervalo">
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('interval')?.value === 'day'"
+          (click)="setInterval('day')"
+        >
+          Diaria
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('interval')?.value === 'week'"
+          (click)="setInterval('week')"
+        >
+          Semanal
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('interval')?.value === 'month'"
+          (click)="setInterval('month')"
+        >
+          Mensual
+        </div>
+        <div
+          class="custom-radio-option"
+          [class.selected]="donationForm.get('interval')?.value === 'year'"
+          (click)="setInterval('year')"
+        >
+          Anual
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="donationForm.invalid">
+      Guardar
+    </button>
+
+    <pre>Formulario: {{ donationForm.value | json }}</pre>
+    <pre>Valores iniciales: {{ initialValues | json }}</pre>
   </form>
 </div>
