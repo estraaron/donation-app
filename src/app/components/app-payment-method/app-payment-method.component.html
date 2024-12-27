@@ -1,0 +1,10 @@
+<div class="payment-method-container">
+  <h2>Resumen Donacion (One-time)</h2>
+  <p><strong>Donante:</strong> {{ donor?.name }}</p>
+  <p><strong>Correo:</strong> {{ donor?.email }}</p>
+  <p><strong>Donación:</strong> {{ donation?.amount }} {{ donation?.currency }}</p>
+
+  <h2>Agregar Método de Pago</h2>
+
+  <app-payment-card></app-payment-card>
+</div>

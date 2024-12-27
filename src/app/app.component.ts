@@ -10,13 +10,14 @@ import { ConfirmationComponent } from "./components/confirmation/confirmation.co
 import { Observable } from 'rxjs';
 import { selectDonationState, selectPrice, selectPriceDetails } from './state/donation/donation.selectors';
 import { getPrice } from './state/donation/donation.actions';
+import { PaymentMethodComponent } from "./components/app-payment-method/app-payment-method.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent]
+  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent, PaymentMethodComponent]
 })
 export class AppComponent implements OnInit {
   currentStep = 1;
@@ -87,6 +88,19 @@ export class AppComponent implements OnInit {
       });
     }
     this.goToStep(3); // Avanzar al siguiente paso
+  }
+
+  handleConfirmation() {
+    // Lógica para redirigir o mostrar una página de agradecimiento
+    console.log('Donación única confirmada. Redirigiendo...');
+    alert('Gracias por tu donación. Hemos recibido tu apoyo.');
+    // Aquí podrías redirigir, por ejemplo:
+    // this.router.navigate(['/thank-you']);
+  }
+
+  handleRecurringFormSubmit(updatedDetails: any) {
+    console.log('Detalles actualizados de donación recurrente:', updatedDetails);
+    // Manejo adicional como actualizar el estado global, llamar a un servicio, etc.
   }
 
   private updateQueryParams(): void {

@@ -1,12 +1,61 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { catchError, map, exhaustMap, of, defer } from 'rxjs';
+import { catchError, map, exhaustMap, of, defer, tap } from 'rxjs';
 import * as DonationActions from './donation.actions';
 import { DonationService } from './donation.service';
 
 @Injectable()
 export class DonationEffects {
   constructor(private actions$: Actions, private donationService: DonationService) {}
+
+  finalizePayment$ = createEffect(() =>
+    defer(() =>
+      this.actions$.pipe(
+        ofType(DonationActions.finalizePayment),
+        exhaustMap(({ paymentIntentId }) =>
+          this.donationService.confirmPaymentIntent(paymentIntentId).pipe(
+            map((result) =>
+              DonationActions.finalizePaymentSuccess({ result })
+            ),
+            catchError((error) =>
+              of(DonationActions.finalizePaymentFailure({ error }))
+            )
+          )
+        )
+      )
+    )
+  );
+
+  createPaymentIntentSuccess$ = createEffect(() =>
+    defer(() =>
+      this.actions$.pipe(
+        ofType(DonationActions.confirmPaymentSuccess),
+        map(({ paymentIntent }) =>
+          DonationActions.finalizePayment({ paymentIntentId: paymentIntent.id })
+        )
+      )
+    )
+  );
+
+  createPaymentIntent$ = createEffect(() =>
+    defer(() =>
+      this.actions$.pipe(
+        ofType(DonationActions.confirmPayment),
+        // Inspecciona los datos de la acción antes de enviarlos al servicio
+        tap(action => console.log('Action received:', action)),
+        exhaustMap(({ paymentIntentData }) =>
+          this.donationService.createPaymentIntent(paymentIntentData).pipe(
+            map((paymentIntent) =>
+              DonationActions.confirmPaymentSuccess({ paymentIntent })
+            ),
+            catchError((error) =>
+              of(DonationActions.confirmPaymentFailure({ error }))
+            )
+          )
+        )
+      )
+    )
+  );
 
   createPrice$ = createEffect(() =>
     defer(() =>

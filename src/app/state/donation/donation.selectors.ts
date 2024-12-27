@@ -3,6 +3,11 @@ import { DonationState } from './donation.reducer';
 
 export const selectDonationState = createFeatureSelector<DonationState>('donation');
 
+export const selectConfirmationDetails = createSelector(
+  selectDonationState,
+  (donationState) => donationState.paymentIntent
+);
+
 export const selectPrice = createSelector(
   selectDonationState,
   (state) => state.price

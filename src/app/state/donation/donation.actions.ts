@@ -1,5 +1,41 @@
 import { createAction, props } from '@ngrx/store';
 
+// export const updateSubscription = createAction(
+//   '[Donation] Update Subscription',
+//   props<{ priceId: string; interval?: string; trial_period_days?: number }>()
+// );
+
+export const finalizePayment = createAction(
+  '[Donation] Finalize Payment',
+  props<{ paymentIntentId: string }>()
+);
+
+export const finalizePaymentSuccess = createAction(
+  '[Donation] Finalize Payment Success',
+  props<{ result: any }>()
+);
+
+export const finalizePaymentFailure = createAction(
+  '[Donation] Finalize Payment Failure',
+  props<{ error: any }>()
+);
+
+// Acción para iniciar el proceso de confirmación
+export const confirmPayment = createAction(
+  '[Donation] Confirm Payment',
+  props<{ paymentIntentData: any }>()
+);
+
+export const confirmPaymentSuccess = createAction(
+  '[Donation] Confirm Payment Success',
+  props<{ paymentIntent: any }>()
+);
+
+export const confirmPaymentFailure = createAction(
+  '[Donation] Confirm Payment Failure',
+  props<{ error: any }>()
+);
+
 // Crear un precio
 export const createPrice = createAction(
   '[Donation] Create Price',

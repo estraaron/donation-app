@@ -1,11 +1,23 @@
-<div class="form-container">
-  <h2>Confirmación</h2>
-  <p>Revisa tus datos antes de confirmar:</p>
-  <ul>
-    <li><strong>Nombre:</strong> {{ donorName }}</li>
-    <li><strong>Email:</strong> {{ donorEmail }}</li>
-    <li><strong>Tipo de Donación:</strong> {{ donationType }}</li>
-    <li><strong>Cantidad:</strong> {{ donationAmount }}</li>
-  </ul>
-  <button class="btn btn-success" (click)="confirm()">Confirmar</button>
+<div class="container">
+  <h2>Paso 3: Confirmación de Donación</h2>
+
+  <!-- Resumen del Donante y Donación -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Resumen</h5>
+      <p><strong>Donante:</strong> {{ donor?.name }}</p>
+      <p><strong>Correo:</strong> {{ donor?.email }}</p>
+      <p><strong>Donación:</strong> {{ donation?.amount }} {{ donation?.currency }}</p>
+
+      <h5 class="card-title">Metodo de pago</h5>
+      <!-- Stripe Card Element -->
+      <div id="card-element" class="mb-3"></div>
+
+    </div>
+  </div>
+
+
+
+  <!-- Botón de Confirmación -->
+  <button class="btn btn-primary" (click)="confirmDonation()">Confirmar</button>
 </div>
