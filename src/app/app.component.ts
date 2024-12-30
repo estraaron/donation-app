@@ -11,13 +11,14 @@ import { Observable } from 'rxjs';
 import { selectDonationState, selectPrice, selectPriceDetails } from './state/donation/donation.selectors';
 import { getPrice } from './state/donation/donation.actions';
 import { PaymentMethodComponent } from "./components/app-payment-method/app-payment-method.component";
+import { AppThankYouComponent } from "./components/app-thank-you/app-thank-you.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent, PaymentMethodComponent]
+  imports: [CommonModule, CreateDonorComponent, DonationDetailsComponent, ConfirmationComponent, PaymentMethodComponent, AppThankYouComponent]
 })
 export class AppComponent implements OnInit {
   currentStep = 1;

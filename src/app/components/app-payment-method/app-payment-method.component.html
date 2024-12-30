@@ -1,10 +1,24 @@
-<div class="payment-method-container">
-  <h2>Resumen Donacion (One-time)</h2>
-  <p><strong>Donante:</strong> {{ donor?.name }}</p>
-  <p><strong>Correo:</strong> {{ donor?.email }}</p>
-  <p><strong>Donación:</strong> {{ donation?.amount }} {{ donation?.currency }}</p>
-
-  <h2>Agregar Método de Pago</h2>
-
-  <app-payment-card></app-payment-card>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header text-center bg-primary text-white">
+          <h2 class="mb-0">Resumen Donación (One-time)</h2>
+        </div>
+        <div class="card-body">
+          <p><strong>Donante:</strong> {{ donor?.name || 'Información no disponible' }}</p>
+          <p><strong>Correo:</strong> {{ donor?.email || 'Información no disponible' }}</p>
+          <p><strong>Donación:</strong> {{ donation?.amount || '0.00' }} {{ donation?.currency || 'USD' }}</p>
+        </div>
+      </div>
+      <div class="card shadow-sm mt-4">
+        <div class="card-header text-center bg-secondary text-white">
+          <h2 class="mb-0">Agregar Método de Pago</h2>
+        </div>
+        <div class="card-body">
+          <app-payment-card></app-payment-card>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
