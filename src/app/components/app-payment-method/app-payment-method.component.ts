@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { combineLatest, Observable, Subject } from 'rxjs';
@@ -25,6 +25,8 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
   donation: any;
   private subscriptions = new Subscription();
 
+  @Output() paymentConfirmation = new EventEmitter<void>(); // Notifica al padre cuando se guarda/actualiza
+
   constructor(private fb: FormBuilder, private store: Store) {
   }
 
@@ -43,14 +45,14 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
         .subscribe(([donor, donation]) => {
           this.donor = donor;
           this.donation = donation;
-          console.log('Datos listos para crear Payment Intent:', this.donor, this.donation);
+          // console.log('Datos listos para crear Payment Intent:', this.donor, this.donation);
           this.createPaymentIntent();
         })
       );
   }
 
   createPaymentIntent() {
-    console.log(this.donor, this.donation)
+    // console.log(this.donor, this.donation)
     if (this.donor && this.donation) {
     const amount = this.donation.amount * 100; // Monto en centavos, ejemplo: 50.00 USD
     const currency = this.donation.currency;
@@ -59,7 +61,12 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       createPaymentIntent({ amount, currency, customer })
     );
-    } else console.log('datos de donacion pendientes')
+    } // else console.log('datos de donacion pendientes')
+  }
+
+  handlePaymentConfirmation(){
+    // Emitir evento indicando que se guardó/actualizó el cliente
+  this.paymentConfirmation.emit();
   }
 
   ngOnDestroy(): void {

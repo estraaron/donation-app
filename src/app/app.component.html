@@ -41,7 +41,9 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="3">
-      <app-payment-method>
+      <app-payment-method
+      (paymentConfirmation)="handlePaymentConfirmation()"
+      >
       </app-payment-method>
     </ng-container>
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Stripe, StripeCardElement, loadStripe } from '@stripe/stripe-js';
 import { selectClientSecret } from '../../../state/payment-methods/payment.selectors';
@@ -12,6 +12,7 @@ import { selectClientSecret } from '../../../state/payment-methods/payment.selec
 })
 export class PaymentCardComponent implements OnInit {
   @ViewChild('cardElement') cardElement!: ElementRef;
+  @Output() paymentConfirmation = new EventEmitter<void>(); // Notifica al padre cuando se confirma la donacion
 
   stripe: Stripe | null = null;
   card: StripeCardElement | null = null;
@@ -33,7 +34,7 @@ export class PaymentCardComponent implements OnInit {
 
     // Suscribirse al estado para obtener el client_secret
     this.store.select(selectClientSecret).subscribe((clientSecret) => {
-      console.log("clientSecret desde selectClientSecret:", clientSecret); // Log para verificar el valor obtenido
+      // console.log("clientSecret desde selectClientSecret:", clientSecret); // Log para verificar el valor obtenido
       this.clientSecret = clientSecret;
     });
   }
@@ -69,7 +70,9 @@ export class PaymentCardComponent implements OnInit {
       console.error('Error al confirmar el pago:', result.error.message);
 
     } else if (result.paymentIntent) {
-      console.log('Pago confirmado:', result.paymentIntent);
+      // console.log('Pago confirmado:', result.paymentIntent);
+      // Emitir evento indicando que se confirmo la donacion
+      this.paymentConfirmation.emit();
     }
   }
 }

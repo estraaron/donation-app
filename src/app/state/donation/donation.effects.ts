@@ -42,7 +42,7 @@ export class DonationEffects {
       this.actions$.pipe(
         ofType(DonationActions.confirmPayment),
         // Inspecciona los datos de la acción antes de enviarlos al servicio
-        tap(action => console.log('Action received:', action)),
+        // tap(action => console.log('Action received:', action)),
         exhaustMap(({ paymentIntentData }) =>
           this.donationService.createPaymentIntent(paymentIntentData).pipe(
             map((paymentIntent) =>

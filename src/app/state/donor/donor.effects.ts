@@ -13,13 +13,13 @@ export class DonorEffects {
       this.actions$.pipe(
         ofType(createCustomer),
         // Inspecciona los datos de la acción antes de enviarlos al servicio
-        tap(action => console.log('Action received:', action)),
+        // tap(action => console.log('Action received:', action)),
         exhaustMap(action =>
           this.donorService.createCustomer({ name: action.name, email: action.email }).pipe(
             // Inspecciona lo que se envía al servicio
-            tap(requestBody => console.log('Request to Stripe:', { name: action.name, email: action.email })),
+            // tap(requestBody => console.log('Request to Stripe:', { name: action.name, email: action.email })),
             // Inspecciona la respuesta devuelta por Stripe
-            tap(response => console.log('Response from Stripe:', response)),
+            // tap(response => console.log('Response from Stripe:', response)),
             map(customer => createCustomerSuccess({
               customerId: customer.id,
               name: customer.name,
@@ -53,7 +53,7 @@ export class DonorEffects {
   updateCustomer$ = createEffect(() =>
     defer(() => this.actions$.pipe(
       ofType(updateCustomer),
-      // tap(action => console.log('Updating customer:', action)),  // Log de la acción
+      // tap(action => // console.log('Updating customer:', action)),  // Log de la acción
       exhaustMap((action) =>
         this.donorService.updateCustomer(action.customerId, { name: action.name, email: action.email }).pipe(
           map((updatedCustomer) =>
@@ -72,6 +72,6 @@ export class DonorEffects {
     private actions$: Actions,
     private donorService: DonorService
   ) {
-    // console.log('Actions observable:', this.actions$);  // Log en el constructor
+    // // console.log('Actions observable:', this.actions$);  // Log en el constructor
   }
 }

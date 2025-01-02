@@ -31,10 +31,10 @@ export class CreateDonorComponent implements OnInit, OnChanges {
 
   onSubmit(): void {
     if (this.name && this.email) {
-      console.log('datos para el submit', {
-        name: this.name,
-        email: this.email
-      })
+      // console.log('datos para el submit', {
+      //   name: this.name,
+      //   email: this.email
+      // })
       if (this.customerId) {
         // Actualizar cliente
         this.store.dispatch(

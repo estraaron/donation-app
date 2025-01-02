@@ -82,7 +82,7 @@ export class AppComponent implements OnInit {
       // Obtener el ID del estado cuando se crea un nuevo donador
       this.store.select(selectPrice).subscribe((price) => {
         if (price) {
-          console.log(price, 'price data');
+          // console.log(price, 'price data');
           this.donationId = price.id;
           this.updateQueryParams(); // Actualiza la URL con el nuevo donorId
         }
@@ -91,16 +91,17 @@ export class AppComponent implements OnInit {
     this.goToStep(3); // Avanzar al siguiente paso
   }
 
-  handleConfirmation() {
+  handlePaymentConfirmation() {
     // Lógica para redirigir o mostrar una página de agradecimiento
-    console.log('Donación única confirmada. Redirigiendo...');
+    // console.log('Donación única confirmada. Redirigiendo...');
     alert('Gracias por tu donación. Hemos recibido tu apoyo.');
+    this.goToStep(4)
     // Aquí podrías redirigir, por ejemplo:
     // this.router.navigate(['/thank-you']);
   }
 
   handleRecurringFormSubmit(updatedDetails: any) {
-    console.log('Detalles actualizados de donación recurrente:', updatedDetails);
+    // console.log('Detalles actualizados de donación recurrente:', updatedDetails);
     // Manejo adicional como actualizar el estado global, llamar a un servicio, etc.
   }
 
