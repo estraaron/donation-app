@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { CreateDonorComponent } from "./components/create-donor/create-donor.component";
 import { DonationDetailsComponent } from "./components/donation-details/donation-details.component";
 import { ConfirmationComponent } from "./components/confirmation/confirmation.component";
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { selectDonationState, selectPrice, selectPriceDetails } from './state/donation/donation.selectors';
 import { getPrice } from './state/donation/donation.actions';
 import { PaymentMethodComponent } from "./components/app-payment-method/app-payment-method.component";
 import { AppThankYouComponent } from "./components/app-thank-you/app-thank-you.component";
+import { PaymentEventService } from './services/payment-event.service';
 
 @Component({
   selector: 'app-root',
@@ -33,16 +34,24 @@ export class AppComponent implements OnInit {
     interval: string;
   }>>;
 
+  private paymentSubscription!: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private paymentEventService: PaymentEventService
   ) {
     this.donorDetails$ = this.store.select(selectDonorDetails);
     this.donationDetails$ = this.store.select(selectPriceDetails);
   }
 
   ngOnInit(): void {
+    // Suscribirse al evento de confirmación de pago
+    this.paymentSubscription = this.paymentEventService.paymentConfirmed$.subscribe(() => {
+      this.handlePaymentConfirmation(); // Llamar al manejador del paso
+    });
+
     this.route.queryParams.subscribe((params) => {
       this.currentStep = +params['step'] || 1;
       this.donorId = params['donorId'] || null;

@@ -1,17 +1,14 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { combineLatest, Observable, Subject } from 'rxjs';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { combineLatest, } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { selectCustomerId, selectDonorDetails } from '../../state/donor/donor.selectors';
-import { loadStripe } from '@stripe/stripe-js';
-import { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
-// import { selectPaymentState, selectSetupIntentStatus } from '../../state/payment-methods/payment.selectors';
 import { createPaymentIntent } from '../../state/payment-methods/payment.actions';
 import { PaymentCardComponent } from "./payment-card/payment-card.component";
 import { Subscription } from 'rxjs';
 import { selectPriceDetails } from '../../state/donation/donation.selectors';
+import { selectDonorDetails } from '../../state/donor/donor.selectors';
 
 @Component({
   selector: 'app-payment-method',
@@ -25,9 +22,9 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
   donation: any;
   private subscriptions = new Subscription();
 
-  @Output() paymentConfirmation = new EventEmitter<void>(); // Notifica al padre cuando se guarda/actualiza
-
-  constructor(private fb: FormBuilder, private store: Store) {
+  constructor(private fb: FormBuilder,
+    private store: Store,
+  ) {
   }
 
   ngOnInit() {
@@ -62,11 +59,6 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
       createPaymentIntent({ amount, currency, customer })
     );
     } // else console.log('datos de donacion pendientes')
-  }
-
-  handlePaymentConfirmation(){
-    // Emitir evento indicando que se guardó/actualizó el cliente
-  this.paymentConfirmation.emit();
   }
 
   ngOnDestroy(): void {

@@ -1,7 +1,8 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Stripe, StripeCardElement, loadStripe } from '@stripe/stripe-js';
 import { selectClientSecret } from '../../../state/payment-methods/payment.selectors';
+import { PaymentEventService } from '../../../services/payment-event.service';
 
 @Component({
   selector: 'app-payment-card',
@@ -12,13 +13,14 @@ import { selectClientSecret } from '../../../state/payment-methods/payment.selec
 })
 export class PaymentCardComponent implements OnInit {
   @ViewChild('cardElement') cardElement!: ElementRef;
-  @Output() paymentConfirmation = new EventEmitter<void>(); // Notifica al padre cuando se confirma la donacion
 
   stripe: Stripe | null = null;
   card: StripeCardElement | null = null;
   clientSecret: string | null = null;
 
-  constructor(private store: Store) {}
+  constructor(private store: Store,
+    private paymentEventService: PaymentEventService,
+  ) {}
 
   async ngOnInit() {
     // Inicializar Stripe y Elements
@@ -54,11 +56,11 @@ export class PaymentCardComponent implements OnInit {
 
   async confirmPayment() {
     if (!this.stripe || !this.card || !this.clientSecret) {
-      console.error('Faltan configuraciones para confirmar el pago', {
-        stripe: this.stripe,
-        card: this.card,
-        cSecret: this.clientSecret
-      });
+      // console.error('Faltan configuraciones para confirmar el pago', {
+      //   stripe: this.stripe,
+      //   card: this.card,
+      //   cSecret: this.clientSecret
+      // });
       return;
     }
 
@@ -68,12 +70,9 @@ export class PaymentCardComponent implements OnInit {
 
     if (result.error) {
       console.error('Error al confirmar el pago:', result.error.message);
-
     } else if (result.paymentIntent) {
       // console.log('Pago confirmado:', result.paymentIntent);
-      // Emitir evento indicando que se confirmo la donacion
-      this.paymentConfirmation.emit();
+      this.paymentEventService.confirmPayment(); // Emitir el evento global
     }
   }
 }
-
