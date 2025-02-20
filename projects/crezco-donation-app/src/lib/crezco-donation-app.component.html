@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Paso {{ currentStep }}</h2>
+
+  <div class="stepper-wrapper">
+    <div class="stepper-container">
+      <div
+        class="step"
+        [ngClass]="{ 'active': currentStep === 1, 'completed': currentStep > 1 }"
+      >
+        1
+      </div>
+      <div class="stepper-line" *ngIf="currentStep > 1"></div>
+      <div
+        class="step"
+        [ngClass]="{ 'active': currentStep === 2, 'completed': currentStep > 2 }"
+      >
+        2
+      </div>
+      <div class="stepper-line" *ngIf="currentStep > 2"></div>
+      <div class="step" [ngClass]="{ 'active': currentStep === 3 }">3</div>
+    </div>
+  </div>
+
+  <div [ngSwitch]="currentStep">
+    <ng-container *ngSwitchCase="1">
+      <app-create-donor
+        *ngIf="currentStep === 1"
+        [customerId]="donorId"
+        [name]="(donorDetails$ | async)?.name ?? ''"
+        [email]="(donorDetails$ | async)?.email ?? ''"
+        (customerSaved)="handleCustomerSaved()"
+></app-create-donor>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="2">
+      <app-donation-details
+      [donationId]="donationId"
+      [initialValues]="(donationDetails$ | async) ?? {}"
+      (donationSaved)="handledonationSaved()"
+      ></app-donation-details>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="3">
+      <app-payment-method>
+      </app-payment-method>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="4">
+      <app-app-thank-you>
+      </app-app-thank-you>
+    </ng-container>
+  </div>
+
+  <div class="navigation">
+    <button
+      class="btn btn-primary"
+      (click)="goToStep(currentStep - 1)"
+      [disabled]="currentStep === 1"
+    >
+      Anterior
+    </button>
+    <button
+      class="btn btn-primary"
+      (click)="goToStep(currentStep + 1)"
+      [disabled]="currentStep === 3"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

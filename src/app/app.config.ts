@@ -5,8 +5,7 @@ import { provideEffects } from '@ngrx/effects';
 import {provideStoreDevtools} from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
-import { reducers } from './state/app.reducer';
-import { appEffects } from './state/app.effects';
+import { provideCrezcoDonationAppConfig } from 'crezco-donation-app';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
@@ -14,16 +13,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideStore(reducers),
-    provideEffects(appEffects),
-    provideStoreDevtools({
-      maxAge: 25,
-      logOnly: !isDevMode(),
-      autoPause: true,
-      trace: false,
-      traceLimit: 75,
-      connectInZone: true,
-    })
+    provideCrezcoDonationAppConfig({ enableStoreDevtools: true })
   ],
+
 };
 
