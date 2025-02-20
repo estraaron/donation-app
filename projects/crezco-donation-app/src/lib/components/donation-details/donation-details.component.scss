@@ -1,0 +1,55 @@
+/* Slider Container */
+.slider-container {
+  position: relative;
+  width: 100%;
+}
+
+.form-range {
+  width: 100%;
+}
+
+.thumb-label {
+  position: absolute;
+  top: -40px;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 30px;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  input {
+    width: 100%;
+    text-align: center;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.9rem;
+  }
+}
+
+/* Radio Group */
+.radio-group {
+  display: flex;
+  gap: 10px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 5px;
+
+  .custom-radio-option {
+    flex: 1;
+    text-align: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &.selected {
+      background-color: #a8cff9;
+      color: #000000;
+      border-radius: 5px;
+    }
+  }
+}

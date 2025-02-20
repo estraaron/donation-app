@@ -1,0 +1,23 @@
+<div class="container">
+  <h2>Paso 3: Confirmación de Donación</h2>
+
+  <!-- Resumen del Donante y Donación -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Resumen</h5>
+      <p><strong>Donante:</strong> {{ donor?.name }}</p>
+      <p><strong>Correo:</strong> {{ donor?.email }}</p>
+      <p><strong>Donación:</strong> {{ donation?.amount }} {{ donation?.currency }}</p>
+
+      <h5 class="card-title">Metodo de pago</h5>
+      <!-- Stripe Card Element -->
+      <div id="card-element" class="mb-3"></div>
+
+    </div>
+  </div>
+
+
+
+  <!-- Botón de Confirmación -->
+  <button class="btn btn-primary" (click)="confirmDonation()">Confirmar</button>
+</div>
